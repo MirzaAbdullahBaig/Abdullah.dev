@@ -8,16 +8,41 @@
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const isDesktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches && window.innerWidth > 900;
 
-  /* ---------- Hero headline safety net (force-visible after load) ---------- */
+  /* ---------- Hero boot sequence: "$ whoami" types, then the page resolves ---------- */
+  const bootCmd = $("#bootCmd");
+  const BOOT_TEXT = "whoami";
+  if (reduce || !bootCmd) {
+    if (bootCmd) bootCmd.textContent = BOOT_TEXT;
+    document.body.classList.add("booted");
+  } else {
+    let bi = 0;
+    setTimeout(function typeBoot() {
+      bootCmd.textContent = BOOT_TEXT.slice(0, ++bi);
+      if (bi < BOOT_TEXT.length) setTimeout(typeBoot, 55 + Math.random() * 55);
+      else setTimeout(() => document.body.classList.add("booted"), 180);
+    }, 320);
+  }
+  /* Safety net: force-visible even if something stalls */
   const heroH1 = $(".hero-h1");
-  if (heroH1) setTimeout(() => heroH1.classList.add("revealed"), 1350);
+  setTimeout(() => {
+    document.body.classList.add("booted");
+    if (heroH1) heroH1.classList.add("revealed");
+  }, 2600);
 
   /* ---------- NAV: scrolled state + active link ---------- */
   const nav = $(".nav");
   const sections = $$("section[id]");
   const navLinks = $$(".nav-links a");
+  let lastY = window.scrollY;
   function onScroll() {
-    nav.classList.toggle("scrolled", window.scrollY > 30);
+    const y0 = window.scrollY;
+    nav.classList.toggle("scrolled", y0 > 30);
+    /* hide on scroll-down, reveal on scroll-up (never while menu open) */
+    if (!document.querySelector(".mobile-menu.open")) {
+      if (y0 > lastY + 6 && y0 > 320) nav.classList.add("nav-hidden");
+      else if (y0 < lastY - 4 || y0 < 320) nav.classList.remove("nav-hidden");
+    }
+    lastY = y0;
     let cur = "";
     const y = window.scrollY + window.innerHeight * 0.35;
     sections.forEach((s) => { if (s.offsetTop <= y) cur = s.id; });
@@ -34,14 +59,18 @@
     $$(".mobile-menu a").forEach((a) => a.addEventListener("click", () => menu.classList.remove("open")));
   }
 
-  /* ---------- Theme toggle ---------- */
+  /* ---------- Theme toggle (syncs with the Tweaks panel) ---------- */
   const themeBtn = $("#themeToggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
-      document.body.classList.toggle("light");
-      localStorage.setItem("pf-theme", document.body.classList.contains("light") ? "light" : "dark");
+      const isLight = document.body.classList.toggle("light");
+      try {
+        const s = JSON.parse(localStorage.getItem("pf-tweaks-v2") || "{}");
+        s.theme = isLight ? "Light" : "Dark";
+        localStorage.setItem("pf-tweaks-v2", JSON.stringify(s));
+      } catch (e) { /* ignore */ }
+      window.dispatchEvent(new CustomEvent("pf-theme", { detail: isLight ? "Light" : "Dark" }));
     });
-    if (localStorage.getItem("pf-theme") === "light") document.body.classList.add("light");
   }
 
   /* ---------- Smooth scroll for in-page anchors ---------- */
@@ -172,6 +201,51 @@
         heat.appendChild(cell);
       }
     }
+  }
+
+  /* ---------- Editorial scroll effects (single rAF, transform-only) ----------
+     · timeline line draws downward, dots pop as it reaches them
+     · oversized section numerals parallax slower than content
+     · footer watermark eases in */
+  const tl = $(".timeline");
+  const tlItems = $$(".tl-item");
+  const numerals = [];
+  $$("section[data-num]").forEach((sec) => {
+    const n = document.createElement("span");
+    n.className = "sec-numeral";
+    n.textContent = sec.dataset.num;
+    n.setAttribute("aria-hidden", "true");
+    sec.appendChild(n);
+    numerals.push({ sec, n });
+  });
+  const watermark = $(".foot-watermark");
+  if (!reduce) {
+    let fxTick = false;
+    function fx() {
+      fxTick = false;
+      const vh = window.innerHeight;
+      if (tl) {
+        const r = tl.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (vh * 0.72 - r.top) / r.height));
+        tl.style.setProperty("--tlp", p.toFixed(4));
+        tlItems.forEach((it) => {
+          it.classList.toggle("lit", it.getBoundingClientRect().top + 30 < vh * 0.72);
+        });
+      }
+      for (const { sec, n } of numerals) {
+        const r = sec.getBoundingClientRect();
+        if (r.bottom < -100 || r.top > vh + 100) continue;
+        const p = (vh - r.top) / (vh + r.height);
+        n.style.transform = `translateY(${((p - 0.5) * -64).toFixed(1)}px)`;
+      }
+      if (watermark && watermark.getBoundingClientRect().top < vh * 0.92) watermark.classList.add("in");
+    }
+    window.addEventListener("scroll", () => { if (!fxTick) { fxTick = true; requestAnimationFrame(fx); } }, { passive: true });
+    fx();
+  } else {
+    if (tl) tl.style.setProperty("--tlp", "1");
+    tlItems.forEach((it) => it.classList.add("lit"));
+    if (watermark) watermark.classList.add("in");
   }
 
   /* ---------- Email copy ---------- */
