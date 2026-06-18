@@ -1,34 +1,122 @@
 /* ============================================================
    RESPONSIVE ENHANCEMENTS — loads LAST.
-   Purely additive, scoped to tablet/mobile breakpoints only.
+   Purely additive, scoped to ≤980px breakpoints only.
    Desktop (>980px) is never touched, so the original Claude
    Design desktop appearance stays byte-for-byte identical.
+
+   ONE consolidated, mobile-down breakpoint system
+   (all applied as max-width, so larger screens are never affected):
+
+     980px — tablet / small laptop  · grids collapse, nav → menu, fluid type
+     760px — large phone            · single column, tightened chrome
+     480px — small phone            · tightened rhythm & spacing
+
+   Loading last means these rules win every conflict against
+   base / nav-hero / sections / editorial without !important.
    ============================================================ */
 
 /* Never allow a stray fixed-width element to cause sideways scroll. */
 html,
 body {
     max-width: 100%;
+    overflow-x: hidden;
 }
 
-/* ---------- Tablet (≤980px) ---------- */
+/* ============================================================
+   TABLET  ≤980px  (grids collapse + nav collapses to the menu —
+   below this width the full 6-link bar + CTA no longer fits the
+   pill without cramping, so iPad portrait gets the clean menu.)
+   ============================================================ */
 @media (max-width: 980px) {
-    /* Hero: keep the showcase from feeling cramped between columns. */
+    /* Fluid hero headline — overrides editorial.css's unconditional
+       clamp(56px,…) which would otherwise floor at 56px on phones and
+       clip long words inside .hero-h1 .line { overflow:hidden }.
+       Single curve from a 72px cap down to a safe 34px floor (~405px). */
+    .hero-h1 {
+        font-size: clamp(34px, 8.4vw, 72px);
+    }
+
     .hero {
         padding-top: 110px;
+        /* Dynamic viewport unit avoids the mobile browser-chrome jump of 100vh. */
+        min-height: 100svh;
     }
+    /* Keep a readable measure (~52ch) once the hero is a single column —
+       a full-width tablet paragraph runs to 90+ chars otherwise. */
     .hero-sub {
-        max-width: 100%;
+        max-width: 52ch;
+    }
+    /* The full-height scroll cue belongs to the desktop 2-col hero;
+       on the stacked tablet/phone hero it just floats over the showcase. */
+    .scroll-ind {
+        display: none;
+    }
+
+    /* Comfortable, standards-compliant tap targets (touch tablets + phones). */
+    .icon-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    /* Bento: let rows grow with content instead of cropping the bio
+       paragraph inside the fixed 168px track + .glass{overflow:hidden}. */
+    .bento {
+        grid-auto-rows: minmax(168px, auto);
+    }
+
+    /* Stats collapse to 2-up here (sections.css); hide the divider that
+       lands at the start of the second row so it doesn't float at a column edge. */
+    .stat:nth-child(3)::before {
+        display: none;
     }
 
     /* Testimonial cards shrink so two never force overflow. */
     .testi-card {
         width: min(400px, 82vw);
     }
+
+    /* Two-up blog on tablet uses the width far better than the
+       source's straight 3→1 collapse (which leaves lone wide cards). */
+    .blog-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* ---- Mobile menu: themed, with a staggered, on-brand entrance ---- */
+    body.light .mobile-menu {
+        background: rgba(238, 238, 234, 0.92);
+    }
+    .mobile-menu a.active {
+        color: var(--text);
+    }
+    .mobile-menu a,
+    .mobile-menu .btn {
+        opacity: 0;
+        transform: translateY(14px);
+        transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+    }
+    .mobile-menu.open a,
+    .mobile-menu.open .btn {
+        opacity: 1;
+        transform: none;
+    }
+    .mobile-menu.open a:nth-child(1) { transition-delay: 0.06s; }
+    .mobile-menu.open a:nth-child(2) { transition-delay: 0.11s; }
+    .mobile-menu.open a:nth-child(3) { transition-delay: 0.16s; }
+    .mobile-menu.open a:nth-child(4) { transition-delay: 0.21s; }
+    .mobile-menu.open a:nth-child(5) { transition-delay: 0.26s; }
+    .mobile-menu.open a:nth-child(6) { transition-delay: 0.31s; }
+    .mobile-menu.open .btn { transition-delay: 0.38s; }
 }
 
-/* ---------- Large phone (≤760px) ---------- */
+/* ============================================================
+   LARGE PHONE  ≤760px
+   ============================================================ */
 @media (max-width: 760px) {
+    :root {
+        --pad-y: 84px;
+    }
+
+    /* ---- Navbar: tighter pill on small screens ---- */
     .nav {
         padding: 12px 0;
     }
@@ -37,45 +125,108 @@ body {
         padding: 10px 12px 10px 16px;
     }
 
+    /* ---- Hero ---- */
     .hero {
         padding-top: 96px;
-        min-height: auto;
         padding-bottom: 40px;
+        min-height: auto;
     }
     .hero-actions {
         width: 100%;
     }
 
-    /* Stats: 2-up reads better than a cramped 4-up on phones. */
-    .stats-inner {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 28px 0;
-    }
-    /* Hide the divider that lands at the start of each new row. */
-    .stat:nth-child(3)::before {
-        display: none;
+    /* ---- Marquee: trim the edge fades so they don't swallow the row ---- */
+    .marquee-band::before,
+    .marquee-band::after {
+        width: 56px;
     }
 
-    /* Featured project: media above copy, comfortable rhythm. */
+    /* ---- Featured project rhythm + bigger link tap targets ---- */
     .feat-row {
         margin-bottom: 48px;
     }
-
+    .feat-links {
+        gap: 22px;
+    }
+    .link-btn {
+        padding: 8px 0;
+    }
     /* Code window never wider than the viewport. */
     .code-window {
         max-width: 100%;
     }
+
+    /* ---- GitHub heatmap: scroll horizontally inside its card instead of
+            blowing out the page width. Fixed-width auto columns make the
+            grid wider than its container, so it gets its own scroll axis. ---- */
+    .heatmap {
+        grid-auto-columns: 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 8px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(var(--accent-rgb), 0.5) transparent;
+    }
+    .heatmap::-webkit-scrollbar {
+        height: 6px;
+    }
+    .heatmap::-webkit-scrollbar-thumb {
+        background: rgba(var(--accent-rgb), 0.45);
+        border-radius: 6px;
+    }
+    .hm-cell {
+        width: 12px;
+    }
+
+    /* ---- Forms: 16px keeps iOS from auto-zooming the viewport on focus ---- */
+    .field input,
+    .field textarea,
+    .news-input input {
+        font-size: 16px;
+    }
+
+    /* ---- Footer: roomier link tap targets; keep the watermark from being
+            clipped by the card's overflow:hidden on narrow widths ---- */
+    .foot-col a {
+        padding: 9px 0;
+    }
+    .foot-watermark {
+        font-size: clamp(34px, 9vw, 92px);
+    }
+
+    /* Blog back to a single column once cards would get too narrow. */
+    .blog-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* ---- Section rhythm ---- */
+    .sec-head-wrap {
+        margin-bottom: 44px;
+    }
+    .testi-card {
+        padding: 24px;
+    }
 }
 
-/* ---------- Small phone (≤480px) ---------- */
+/* ============================================================
+   SMALL PHONE  ≤480px
+   ============================================================ */
 @media (max-width: 480px) {
     :root {
-        --pad-y: 72px;
+        --pad-y: 70px;
         --radius: 16px;
     }
 
+    .wrap {
+        padding: 0 18px;
+    }
     .sec-head-wrap {
-        margin-bottom: 40px;
+        margin-bottom: 36px;
+    }
+
+    /* Calmer oversized numeral so it doesn't crowd the heading on small screens. */
+    .sec-numeral {
+        font-size: clamp(58px, 18vw, 104px);
     }
 
     /* Stacked CTAs go full width and centered. */
@@ -103,7 +254,7 @@ body {
         padding: 26px 20px;
     }
 
-    /* Marquee items a touch smaller so more brand the screen. */
+    /* Marquee items a touch smaller so more brands fit the screen. */
     .marquee-item {
         font-size: 19px;
     }
@@ -111,11 +262,50 @@ body {
         gap: 42px;
         padding-right: 42px;
     }
+
+    /* Reclaim horizontal room for timeline cards (the rail dot stays
+       centered on the 7px rail: dot left edge → 0, center → 8px). */
+    .timeline {
+        padding-left: 28px;
+    }
+    .tl-item::before {
+        left: -28px;
+    }
 }
 
-/* ---------- Touch devices: drop hover-only flourishes ---------- */
+/* ============================================================
+   TOUCH DEVICES — drop hover-only flourishes so a tap doesn't
+   leave an element stuck in its lifted/hover state.
+   ============================================================ */
 @media (hover: none) {
-    .glass-hover:hover {
+    .glass-hover:hover,
+    .skill-tile:hover,
+    .social-circle:hover,
+    .icon-btn:hover,
+    .btn-grad:hover,
+    .btn-ghost:hover,
+    .browser-frame:hover {
         transform: none;
+    }
+    /* Keep the interactive icon's color cue, just no rotate-scale jump. */
+    .skill-tile:hover i {
+        transform: none;
+    }
+    /* Mock-zoom and reveal chips are pointer-only affordances. */
+    .feat-media:hover .bf-screen .mock,
+    .proj-card:hover .proj-thumb .mock {
+        transform: none;
+    }
+}
+
+/* ============================================================
+   REDUCED MOTION — the staggered menu entrance becomes instant.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    .mobile-menu a,
+    .mobile-menu .btn {
+        transition: none;
+        transform: none;
+        opacity: 1;
     }
 }

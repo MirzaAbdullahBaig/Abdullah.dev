@@ -234,9 +234,10 @@ body.light .marquee-item:has(.devicon-redis-plain):hover { color: #555B61; }
   .hero-h1 { font-size: clamp(44px, 13vw, 70px); }
   .hero-showcase { max-width: 420px; }
 }
-/* Full navbar (links + Connect me + theme toggle) stays on desktop & tablet;
-   hamburger appears only on true mobile widths. */
-@media (max-width: 760px) {
+/* Full link bar + CTA stays on desktop; at ≤980 the 6 links + CTA can no
+   longer share the pill without cramping (iPad portrait), so collapse to
+   the hamburger menu — aligned with the grid breakpoint for consistency. */
+@media (max-width: 980px) {
   .nav-links, .nav-cta { display: none; }
   .hamburger { display: grid; }
 }

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 
 import { navLinks } from "@/data/site";
 import { BrandLogo } from "@/components/ui/brand-logo";
-import { Menu, Sun } from "@/components/ui/icons";
+import { Close, Menu, Sun } from "@/components/ui/icons";
 
 const THEME_KEY = "pf-theme";
 const THEME_EVENT = "pf-theme-change";
@@ -61,6 +61,20 @@ export function Navbar() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
+    /* Lock the page behind the full-screen mobile menu, and let Escape close it.
+       Both clean up so the body never gets stuck non-scrollable. */
+    useEffect(() => {
+        if (!menuOpen) return;
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+        window.addEventListener("keydown", onKey);
+        return () => {
+            document.body.style.overflow = prevOverflow;
+            window.removeEventListener("keydown", onKey);
+        };
+    }, [menuOpen]);
+
     const toggleTheme = useCallback(() => {
         const light = document.body.classList.toggle("light");
         try {
@@ -79,15 +93,19 @@ export function Navbar() {
                 <div className="nav-inner">
                     <BrandLogo />
                     <div className="nav-links">
-                        {navLinks.map((link) => (
-                            <a
-                                key={link.href}
-                                href={link.href}
-                                className={activeId === link.href.slice(1) ? "active" : undefined}
-                            >
-                                {link.label}
-                            </a>
-                        ))}
+                        {navLinks.map((link) => {
+                            const isActive = activeId === link.href.slice(1);
+                            return (
+                                <a
+                                    key={link.href}
+                                    href={link.href}
+                                    className={isActive ? "active" : undefined}
+                                    aria-current={isActive ? "page" : undefined}
+                                >
+                                    {link.label}
+                                </a>
+                            );
+                        })}
                     </div>
                     <div className="nav-right">
                         <button
@@ -103,22 +121,31 @@ export function Navbar() {
                         </a>
                         <button
                             className="icon-btn hamburger"
-                            aria-label="Menu"
+                            aria-label={menuOpen ? "Close menu" : "Open menu"}
                             aria-expanded={menuOpen}
                             onClick={() => setMenuOpen((o) => !o)}
                         >
-                            <Menu />
+                            {menuOpen ? <Close /> : <Menu />}
                         </button>
                     </div>
                 </div>
             </nav>
 
             <div className={menuOpen ? "mobile-menu open" : "mobile-menu"}>
-                {navLinks.map((link) => (
-                    <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
-                        {link.label}
-                    </a>
-                ))}
+                {navLinks.map((link) => {
+                    const isActive = activeId === link.href.slice(1);
+                    return (
+                        <a
+                            key={link.href}
+                            href={link.href}
+                            className={isActive ? "active" : undefined}
+                            aria-current={isActive ? "page" : undefined}
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            {link.label}
+                        </a>
+                    );
+                })}
                 <a href="#contact" className="btn btn-grad" onClick={() => setMenuOpen(false)}>
                     Connect me
                 </a>

@@ -141,6 +141,12 @@ export const Menu = (props: Props) => (
     </Line>
 );
 
+export const Close = (props: Props) => (
+    <Line sw={1.8} {...props}>
+        <path d="M6 6l12 12M18 6L6 18" />
+    </Line>
+);
+
 export const StarSolid = (props: Props) => (
     <Solid {...props}>
         <path d="M12 2l3 6 6 .9-4.5 4.3 1 6.1L12 16.5 6.5 19.3l1-6.1L3 8.9 9 8z" />
