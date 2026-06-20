@@ -1,0 +1,97 @@
+/* ============================================================
+   404 / NOT-FOUND PAGE
+   On-brand styling for components/ui/404-page-not-found.tsx.
+   Pure design tokens (fonts, --muted, .grad-text, .btn) — no
+   raster art, no white box. Sits inside the nav/footer shell.
+   ============================================================ */
+.nf {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 140px 24px 90px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Soft accent halo behind the numerals (matches the site's glow blobs). */
+.nf-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(620px, 92vw);
+    height: min(620px, 92vw);
+    transform: translate(-50%, -56%);
+    background: radial-gradient(
+        circle,
+        rgba(var(--accent-rgb), 0.22),
+        rgba(var(--accent-rgb), 0.06) 45%,
+        transparent 70%
+    );
+    filter: blur(50px);
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.nf-inner {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    text-align: center;
+}
+
+.nf-404 {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(72px, 16vw, 150px);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    margin-bottom: 0;
+}
+
+/* Transparent caveman illustration (replaces the white-backed GIF). */
+.nf-art {
+    margin: 0 auto 14px;
+}
+.nf-art-svg {
+    display: block;
+    width: clamp(190px, 46vw, 280px);
+    height: auto;
+    margin: 0 auto;
+    animation: nf-float 5s ease-in-out infinite;
+}
+@keyframes nf-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .nf-art-svg {
+        animation: none;
+    }
+}
+
+.nf-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(26px, 4.5vw, 40px);
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+}
+
+.nf-text {
+    color: var(--muted);
+    font-size: 17px;
+    margin-bottom: 30px;
+}
+
+.nf-actions {
+    display: flex;
+    justify-content: center;
+}

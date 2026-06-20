@@ -23,6 +23,48 @@ body {
 }
 
 /* ============================================================
+   NAVBAR LEGIBILITY (all widths + all scroll states)
+   The source nav floats transparent over the hero and only gains
+   a (still translucent) background once scrolled, so at the top of
+   the page the huge hero headline bleeds straight through the bar.
+   Give the nav-inner a near-opaque backing ALWAYS (blur stays as
+   polish) so the navbar is readable over any content behind it.
+   ============================================================ */
+.nav-inner {
+    background: rgba(12, 12, 16, 0.96);
+    border-color: rgba(255, 255, 255, 0.09);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    box-shadow: 0 14px 36px -20px rgba(0, 0, 0, 0.85);
+}
+body.light .nav-inner {
+    background: rgba(246, 246, 243, 0.96);
+    border-color: rgba(18, 18, 22, 0.1);
+}
+/* A touch more presence once the page is scrolled. */
+.nav.scrolled .nav-inner {
+    background: rgba(10, 10, 13, 0.97);
+    box-shadow: 0 16px 40px -20px rgba(0, 0, 0, 0.9);
+}
+body.light .nav.scrolled .nav-inner {
+    background: rgba(245, 245, 242, 0.97);
+}
+
+/* Mobile menu overlay — effectively opaque; the blur is just texture. */
+.mobile-menu {
+    background: rgba(10, 10, 12, 0.985);
+    backdrop-filter: blur(26px) saturate(130%);
+    -webkit-backdrop-filter: blur(26px) saturate(130%);
+    padding: 84px 24px 40px;
+    gap: 6px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+.mobile-menu a {
+    font-size: 26px;
+}
+
+/* ============================================================
    TABLET  ≤980px  (grids collapse + nav collapses to the menu —
    below this width the full 6-link bar + CTA no longer fits the
    pill without cramping, so iPad portrait gets the clean menu.)
@@ -83,7 +125,7 @@ body {
 
     /* ---- Mobile menu: themed, with a staggered, on-brand entrance ---- */
     body.light .mobile-menu {
-        background: rgba(238, 238, 234, 0.92);
+        background: rgba(244, 244, 240, 0.985);
     }
     .mobile-menu a.active {
         color: var(--text);
@@ -120,6 +162,8 @@ body {
     .nav {
         padding: 12px 0;
     }
+    /* Tighter pill on small screens (background comes from the
+       all-widths nav-inner rule above). */
     .nav-inner {
         width: calc(100% - 24px);
         padding: 10px 12px 10px 16px;

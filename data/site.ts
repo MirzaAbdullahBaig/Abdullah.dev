@@ -116,9 +116,9 @@ export const siteConfig = {
     role: "Senior Full-Stack Developer",
     url: "https://abdullahbaig.dev",
     description:
-        "I build fast, scalable web apps end-to-end — from pixel-perfect interfaces to resilient backends. 8+ years turning ideas into products people love.",
-    email: "hello@abdullahbaig.dev",
-    phone: "+92 300 1234567",
+        "I build fast, scalable web apps end-to-end — from pixel-perfect interfaces to resilient backends. 4+ years turning ideas into products people love.",
+    email: "abaig7921@gmail.com",
+    phone: "+92 317 1127116",
     location: "Karachi, Pakistan",
     logo: { mark: "MB", text: "Abdullah", suffix: ".dev" },
 } as const;
@@ -133,10 +133,10 @@ export const navLinks: NavLink[] = [
 ];
 
 export const socials: SocialLink[] = [
-    { name: "github", label: "GitHub", href: "https://github.com/abdullahbaig" },
-    { name: "linkedin", label: "LinkedIn", href: "https://linkedin.com/in/abdullahbaig" },
-    { name: "x", label: "X", href: "https://x.com/abdullahbaig" },
-    { name: "email", label: "Email", href: "mailto:hello@abdullahbaig.dev" },
+    { name: "github", label: "GitHub", href: "https://github.com/MirzaAbdullahBaig/" },
+    { name: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/in/mirzaabdullahbaig0" },
+    { name: "x", label: "X", href: "https://x.com/_Abdullah_baig" },
+    { name: "email", label: "Email", href: "mailto:abaig7921@gmail.com" },
 ];
 
 /* ---------- Hero ---------- */
@@ -144,7 +144,7 @@ export const hero = {
     pill: "Available for work",
     bootCommand: "whoami",
     greeting: "Hi, I'm Abdullah 👋",
-    headline: ["Senior", "Full-Stack", "Developer"] as const,
+    headline: ["Full-Stack", "Developer"] as const,
     /** Index of the headline word that gets the accent treatment. */
     headlineAccentIndex: 1,
     subtitle: siteConfig.description,
@@ -184,14 +184,14 @@ export const about = {
         desc: "Real-time collaborative infra for AI teams.",
     },
     nowPlaying: { track: "Midnight City", artist: "M83" },
-    yearsExperience: "8+",
+    yearsExperience: "4+",
     interests: ["☕ Coffee", "♟ Chess", "📷 Photography", "🏔 Hiking", "🎮 Indie games"],
 };
 
 /* ---------- Stats ---------- */
 export const stats: StatItem[] = [
-    { count: 8, suffix: "+", label: "Years Experience" },
-    { count: 50, suffix: "+", label: "Projects Shipped" },
+    { count: 4, suffix: "+", label: "Years Experience" },
+    { count: 16, suffix: "+", label: "Projects Shipped" },
     { count: 30, suffix: "+", label: "Happy Clients" },
     { count: 15, label: "Open-Source Repos" },
 ];
